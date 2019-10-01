@@ -1,6 +1,6 @@
 # Simple s3 utility
 
-This repository contain example of simple example for download file from s3 storage
+This repository contain simple example of downloading file from s3 storage
 
 ### Usage
 Environment variables should be set:
