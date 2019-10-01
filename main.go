@@ -6,8 +6,10 @@ import (
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 var outputPath = flag.String("path", "", "Set location of key file to save")
@@ -23,7 +25,10 @@ func main() {
 	}
 
 	defer file.Close()
-	sess, _ := session.NewSession()
+	sess, _ := session.NewSession(&aws.Config{
+		Endpoint:    aws.String(apiEndpoint),
+		Credentials: credentials.NewEnvCredentials(),
+	})
 
 	downloader := s3manager.NewDownloader(sess)
 
