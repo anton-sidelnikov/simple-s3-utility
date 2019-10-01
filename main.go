@@ -19,6 +19,7 @@ const bucket = "obs-csm"
 
 func main() {
 	var item = "key/scn1_instance_rsa"
+
 	file, err := os.Create(*outputPath)
 	if err != nil {
 		fmt.Println(err)
@@ -28,6 +29,7 @@ func main() {
 	sess, _ := session.NewSession(&aws.Config{
 		Endpoint:    aws.String(apiEndpoint),
 		Credentials: credentials.NewEnvCredentials(),
+		Region:      aws.String("eu-de"),
 	})
 
 	downloader := s3manager.NewDownloader(sess)
