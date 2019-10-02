@@ -9,4 +9,4 @@ Environment variables should be set:
 
 Usage:
 
-`main <outputFilePATH>`
+`./main -k=<fileKey> -o=<outputFilePATH>`
