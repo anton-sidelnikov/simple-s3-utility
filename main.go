@@ -2,46 +2,29 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
+	"log"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/minio/minio-go/v6"
+
 )
 
-var outputPath = flag.String("path", "", "Set location of key file to save")
+var key = flag.String("k", "", "Set file key to get from s3")
+var outputFile = flag.String("o", "output", "Set output file name")
 
-const apiEndpoint = "https://obs.eu-de.otc.t-systems.com"
+const apiEndpoint = "obs.eu-de.otc.t-systems.com"
 const bucket = "obs-csm"
 
+
 func main() {
-	var item = "key/scn1_instance_rsa"
-
-	file, err := os.Create(*outputPath)
+	flag.Parse()
+	s3Client, err := minio.New(apiEndpoint, os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), false)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalln(err)
 	}
 
-	defer file.Close()
-	sess, _ := session.NewSession(&aws.Config{
-		Endpoint:    aws.String(apiEndpoint),
-		Credentials: credentials.NewEnvCredentials(),
-		Region:      aws.String("eu-de"),
-	})
-
-	downloader := s3manager.NewDownloader(sess)
-
-	numBytes, err := downloader.Download(file,
-		&s3.GetObjectInput{
-			Bucket: aws.String(bucket),
-			Key:    aws.String(item),
-		})
-	if err != nil {
-		fmt.Println(err)
+	if err := s3Client.FGetObject(bucket, *key, *outputFile, minio.GetObjectOptions{}); err != nil {
+		log.Fatalln(err)
 	}
-
-	fmt.Println("Downloaded", file.Name(), numBytes, "bytes")
+	log.Println("Successfully saved ", *outputFile)
 }
